@@ -1,13 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Main where
+module Main (main) where
 
-import Control.Exception (handle)
 import Data.Aeson
-import Data.ByteString (ByteString)
-import qualified Data.ByteString as C8 (pack, unpack)
-import qualified Data.ByteString.Lazy.Internal as Lazy (ByteString, toStrict)
-import Data.Char (chr)
+import Data.ByteString.Lazy.Internal qualified as Lazy (ByteString)
 import Data.Functor
 import Network.HTTP.Simple
 import Wthr.Geo
