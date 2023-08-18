@@ -3,10 +3,11 @@
 module Main (main) where
 
 import Data.Aeson
-import Data.ByteString.Lazy.Internal qualified as Lazy (ByteString)
+import Data.ByteString.Lazy.Internal as Lazy (ByteString)
 import Data.Functor
 import Network.HTTP.Simple
 import Wthr.Geo
+import Wthr.Weather
 
 getGeolocationUrl :: Request
 getGeolocationUrl = "http://ip-api.com/json/"
@@ -20,7 +21,6 @@ main = do
   case (decode geoData :: Maybe GeoLocation) of
     Nothing -> return ()
     Just geo -> do
-      res <-
-        getWeatherUrl geo >>= getRequest
-      print res
+      res <- getWeatherUrl geo >>= getRequest
+      print (decode res :: Maybe Weather)
       return ()
