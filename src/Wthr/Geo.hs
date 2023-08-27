@@ -1,11 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Wthr.Geo (GeoLocation, getWeatherUrl) where
+module Wthr.Geo (GeoLocation, weatherUrlBase) where
 
 import Control.Applicative
 import Data.Aeson
-import Network.HTTP.Simple (Request, parseRequest)
 import Text.Printf (printf)
 
 type Latitude = Float
@@ -27,6 +26,3 @@ instance FromJSON GeoLocation where
 
 weatherUrlBase :: GeoLocation -> String
 weatherUrlBase GeoLocation {..} = printf "https://api.open-meteo.com/v1/forecast?latitude=%s&longitude=%s&timezone=%s&current_weather=true&daily=temperature_2m_max,temperature_2m_min" (show latitude) (show longitude) timezone
-
-getWeatherUrl :: GeoLocation -> IO Request
-getWeatherUrl = parseRequest . weatherUrlBase

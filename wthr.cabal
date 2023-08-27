@@ -19,7 +19,9 @@ executable wthr
   main-is:          Main.hs
   other-modules:
     Wthr.Geo
+    Wthr.Http
     Wthr.Weather
+    Wthr.Error
 
   default-language: Haskell2010
   build-depends:

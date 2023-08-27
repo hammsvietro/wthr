@@ -3,24 +3,25 @@
 module Main (main) where
 
 import Data.Aeson
-import Data.ByteString.Lazy.Internal as Lazy (ByteString)
-import Data.Functor
 import Network.HTTP.Simple
 import Wthr.Geo
+import Wthr.Http
 import Wthr.Weather
 
 getGeolocationUrl :: Request
 getGeolocationUrl = "http://ip-api.com/json/"
 
-getRequest :: Request -> IO Lazy.ByteString
-getRequest request = httpLbs request <&> getResponseBody
+printTodaysWeather :: Weather -> IO ()
+printTodaysWeather weather = do
+  putStrLn "Today's weather:"
+  let minimumTemperature' = show $ head $ getMinimumTemperature weather
+  let maxmimumTemperature' = show $ head $ getMaximumTemperature weather
+  putStrLn $ "Min: " ++ minimumTemperature'
+  putStrLn $ "Max: " ++ maxmimumTemperature'
 
 main :: IO ()
 main = do
   geoData <- getRequest getGeolocationUrl
   case (decode geoData :: Maybe GeoLocation) of
     Nothing -> return ()
-    Just geo -> do
-      res <- getWeatherUrl geo >>= getRequest
-      print (decode res :: Maybe Weather)
-      return ()
+    Just geo -> getWeather geo >>= printTodaysWeather
