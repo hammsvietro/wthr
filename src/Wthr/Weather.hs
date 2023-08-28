@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Wthr.Weather (Weather, getWeather, getMinimumTemperature, getMaximumTemperature, getDays) where
+module Wthr.Weather (WeatherForecast (..), getWeather, TemperatureUnit (..)) where
 
 import Control.Applicative
 import Control.Exception (throwIO)
@@ -11,9 +11,11 @@ import Wthr.Error
 import Wthr.Geo
 import Wthr.Http
 
-data Weather = Weather {getMinimumTemperature :: [Float], getMaximumTemperature :: [Float], getDays :: [Day]} deriving (Show)
+data TemperatureUnit = Celsius | Fahrenheit
 
-instance FromJSON Weather where
+data WeatherForecast = Weather {getMinimumTemperatures :: [Float], getMaximumTemperatures :: [Float], getDays :: [Day]} deriving (Show)
+
+instance FromJSON WeatherForecast where
   parseJSON (Object v) = do
     dailyVal <- v .: "daily"
     case dailyVal of
@@ -22,10 +24,10 @@ instance FromJSON Weather where
       _ -> fail "failed to parse"
   parseJSON _ = empty
 
-getWeather :: GeoLocation -> IO Weather
+getWeather :: GeoLocation -> IO WeatherForecast
 getWeather geo = do
   req <- parseRequest (weatherUrlBase geo)
   response <- getRequest req
-  case (decode response :: Maybe Weather) of
+  case (decode response :: Maybe WeatherForecast) of
     Nothing -> throwIO ParseWeatherResponse
     Just weather -> return weather
