@@ -1,14 +1,18 @@
 module Main (main) where
 
-import Data.Aeson
+import Control.Exception (try)
+import System.Exit (ExitCode (ExitFailure), exitWith)
+import Wthr.Error
 import Wthr.Geo
-import Wthr.Http
 import Wthr.PrettyPrint
 import Wthr.Weather
 
+run :: IO ()
+run = getGeolocation >>= getWeather >>= prettyPrintWeather
+
 main :: IO ()
 main = do
-  geoData <- getRequest getGeolocationUrl
-  case (decode geoData :: Maybe GeoLocation) of
-    Nothing -> return ()
-    Just geo -> getWeather geo >>= prettyPrintWeather
+  result <- try run :: IO (Either WthrException ())
+  case result of
+    Right _ -> pure ()
+    Left e -> print e >> exitWith (ExitFailure (-1))

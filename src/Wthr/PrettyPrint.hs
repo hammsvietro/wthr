@@ -24,9 +24,10 @@ formatForecastDate (1, _) = "Tomorrow"
 formatForecastDate (_, day) = formatTime defaultTimeLocale "%d-%m-%Y" day
 
 getForecastHeader :: WeatherForecast -> Box
-getForecastHeader fc = moveUp 1 $ hsep 4 center1 boxes
+getForecastHeader fc = format header
   where
-    boxes = textL5 "" : (textC10 . formatForecastDate <$> enumerate (getDays fc))
+    format = moveUp 1 . hsep 4 center1
+    header = textL5 "" : (textC10 . formatForecastDate <$> enumerate (getDays fc))
 
 getForecastRow :: WeatherForecast -> (WeatherForecast -> [Float]) -> [Box]
 getForecastRow fc fn = textC10 . formatTemperature Celsius <$> fn fc

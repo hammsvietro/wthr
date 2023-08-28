@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Wthr.Weather (WeatherForecast (..), getWeather, TemperatureUnit (..)) where
 
@@ -7,6 +8,7 @@ import Control.Exception (throwIO)
 import Data.Aeson
 import Data.Time.Calendar
 import Network.HTTP.Simple (parseRequest)
+import Text.Printf (printf)
 import Wthr.Error
 import Wthr.Geo
 import Wthr.Http
@@ -29,5 +31,8 @@ getWeather geo = do
   req <- parseRequest (weatherUrlBase geo)
   response <- getRequest req
   case (decode response :: Maybe WeatherForecast) of
-    Nothing -> throwIO ParseWeatherResponse
+    Nothing -> throwIO ParseWeatherForecastResponse
     Just weather -> return weather
+
+weatherUrlBase :: GeoLocation -> String
+weatherUrlBase GeoLocation {..} = printf "https://api.open-meteo.com/v1/forecast?latitude=%s&longitude=%s&timezone=%s&current_weather=true&daily=temperature_2m_max,temperature_2m_min" (show getLatitude) (show getLongitude) getTimezone
